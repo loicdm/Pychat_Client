@@ -6,7 +6,7 @@ from functions import *
 
 def gui_login():
 
-    def registerbutton():
+    def registerbutton(event):
         gui_register()
 
     def loginbutton():
@@ -139,7 +139,6 @@ def gui_join(a, b):
             if id_regex2 is not None:
                 channel = channel[1:]
             if connexion_channel(channel, password) is True:
-                from gui_chat import gui_chat
                 guimenu.destroy()
                 gui_chat(username, userpassword, channel, password)
 
