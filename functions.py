@@ -9,8 +9,10 @@ import time
 from threading import Thread
 from tkinter.messagebox import *
 
+
 def set_icon(window):
     window.wm_iconbitmap("pychat_icon.ico")
+
 
 def readcfg(list):
     config = configparser.ConfigParser()
@@ -21,41 +23,46 @@ def readcfg(list):
 
 
 def connect(host, port):
-    try :
+    try:
         connexion_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         connexion_server.connect((host, int(port)))
         return connexion_server
     except:
         return "err1"
 
-def send(message,connexion_server ):
+
+def send(message, connexion_server):
     connexion_server.send(pickle.dumps(message))
+
 
 def recv(connexion_server):
     received_message = connexion_server.recv(1024)
     return pickle.loads(received_message)
 
+
 def disconnect(connexion_server):
     connexion_server.shutdown(1)
     connexion_server.close()
 
+
 def login(username, password):
-    connexion_server = connect(readcfg(['SOCKET','host']), readcfg(['SOCKET','port']))
+    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
     if connexion_server == "err1":
         showwarning('ERR1', 'SERVEUR INACESSIBLE')
     else:
         message = ["login", username, password]
-        send(message,connexion_server)
+        send(message, connexion_server)
         received_message = recv(connexion_server)
         disconnect(connexion_server)
         if received_message is True:
             return True
-        if received_message is False :
+        if received_message is False:
             return False
         elif received_message == "err3":
             showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
 
-def sendmsg(username, channel, password,  msg):
+
+def sendmsg(username, channel, password, msg):
     connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
     if connexion_server == "err1":
         showwarning('ERR1', 'SERVEUR INACESSIBLE')
@@ -69,6 +76,7 @@ def sendmsg(username, channel, password,  msg):
         elif received_message == "err3":
             showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
 
+
 def connexion_channel(channel, password):
     connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
     if connexion_server == "err1":
@@ -81,6 +89,7 @@ def connexion_channel(channel, password):
             showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
         disconnect(connexion_server)
         return received_message
+
 
 def used_channel(channel, password):
     connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
@@ -149,6 +158,7 @@ def get_msg(id, channel, password):
     disconnect(connexion_server)
     return received_message
 
+
 def get_chan_name(channel):
     connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
     if connexion_server == "err1":
@@ -161,13 +171,14 @@ def get_chan_name(channel):
     disconnect(connexion_server)
     return received_message
 
+
 def register(username, password, first_name, last_name, email):
-    connexion_server = connect(readcfg(['SOCKET','host']), readcfg(['SOCKET','port']))
+    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
     if connexion_server == "err1":
         showwarning('ERR1', 'SERVEUR INACESSIBLE')
     else:
         message = ["register", username, password, first_name, last_name, email]
-        send(message,connexion_server)
+        send(message, connexion_server)
         received_message = recv(connexion_server)
         disconnect(connexion_server)
         if received_message == "err3":
@@ -179,7 +190,7 @@ def register(username, password, first_name, last_name, email):
 
 
 def check_cfg():
-    if os.path.exists("client_config.ini") == False:
+    if os.path.exists("client_config.ini") is False:
         config = configparser.ConfigParser()
         config.read('client_config.ini')
         config['SOCKET'] = {'host': 'localhost',
@@ -189,17 +200,17 @@ def check_cfg():
     else:
         config = configparser.ConfigParser()
         config.read('client_config.ini')
-        if ('SOCKET' in config) == False:
+        if ('SOCKET' in config) is False:
             os.remove("client_config.ini")
             config['SOCKET'] = {'host': 'localhost',
                                 'port': '1111'}
             with open('client_config.ini', 'w') as configfile:
                 config.write(configfile)
-        if ('host' in config['SOCKET']) == False:
+        if ('host' in config['SOCKET']) is False:
             config['SOCKET']['host'] = 'localhost'
             with open('client_config.ini', 'w') as configfile:
                 config.write(configfile)
-        if ('port' in config['SOCKET']) == False:
+        if ('port' in config['SOCKET']) is False:
             config['SOCKET']['port'] = '1111'
             with open('client_config.ini', 'w') as configfile:
                 config.write(configfile)

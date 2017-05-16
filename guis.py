@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter.messagebox import *
 from functions import *
 
+
 def gui_login():
     def registerbutton(event):
         gui_register()
@@ -18,7 +19,6 @@ def gui_login():
         elif log is False:
             showwarning("ERR2", "NOM D'UTILISATEUR OU MOT DE PASSE INVALIDE")
             password_textvariable.set('')
-
 
     guilogin = Tk()
     set_icon(guilogin)
@@ -50,20 +50,20 @@ def gui_login():
 
     guilogin.mainloop()
 
-def gui_register():
 
+def gui_register():
     def resgisterbutton():
         username = str(username_entry.get())
         password = str(password_entry.get())
         first_name = str(first_name_entry.get())
         last_name = str(last_name_entry.get())
         email = str(email_entry.get())
-        if len(password) <= 16 and len(password) >= 8:
+        if 16 >= len(password) >= 8:
             password_test = True
         else:
             password_test = False
         email_regex = re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email)
-        if email_regex is not None and password_test == True:
+        if email_regex is not None and password_test is True:
             log = register(username, password, first_name, last_name, email)
             if log is True:
                 registerwindow.destroy()
@@ -71,6 +71,7 @@ def gui_register():
                 showwarning('ERR4', "NOM D'UTILISATEUR OU EMAIL NON DISPONIBLE")
         else:
             showwarning('ERREUR', 'EMAIL OU MOT DE PASSE INVALIDE')
+
     registerwindow = Tk()
     set_icon(registerwindow)
     registerwindow.title("PYCHAT | INSCRIPTION")
@@ -111,6 +112,7 @@ def gui_register():
     button.pack()
     registerwindow.mainloop()
 
+
 def gui_join(a, b):
     def join_chan_call_gui():
         guimenu.destroy()
@@ -123,6 +125,7 @@ def gui_join(a, b):
     global username, userpassword, guimenu
     username = a
     userpassword = b
+
     def join_chan():
         channel = str(channel_id_entry.get())
         password = str(channel_password_entry.get())
@@ -159,7 +162,6 @@ def gui_join(a, b):
 
     guimenu.config(menu=menubar)
 
-
     channel_id_textvariable = StringVar()
     join_channel_text_id = Label(guimenu, text="ID du canal à rejoindre:")
     channel_id_entry = Entry(guimenu, textvariable=channel_id_textvariable, width=30)
@@ -177,7 +179,8 @@ def gui_join(a, b):
     button1.pack()
 
     guimenu.mainloop()
-    
+
+
 def gui_create(a, b):
     def join_chan():
         guimenu.destroy()
@@ -186,9 +189,11 @@ def gui_create(a, b):
     def create_chan():
         guimenu.destroy()
         gui_create(username, userpassword)
+
     global username, userpassword, guimenu
     username = a
     userpassword = b
+
     def create_channel():
         channel = str(channel_id_entry.get())
         password = str(channel_password_entry.get())
@@ -237,7 +242,8 @@ def gui_create(a, b):
     button2.pack()
 
     guimenu.mainloop()
-    
+
+
 def gui_menu(a, b):
     def join_chan():
         guimenu.destroy()
@@ -262,9 +268,9 @@ def gui_menu(a, b):
     bouton1.place(x=100, y=10, height=30, width=120)
     bouton2.place(x=100, y=50, height=30, width=120)
 
-
     guimenu.mainloop()
-    
+
+
 def gui_chat(a, b, c, d):
     def send():
         msg = str(Entry1.get())
@@ -278,7 +284,7 @@ def gui_chat(a, b, c, d):
 
         def run(self):
             localidlist = []
-            while Running == True:
+            while Running is True:
                 try:
                     time.sleep(1)
                     global guichat
@@ -347,13 +353,13 @@ def gui_chat(a, b, c, d):
     chat.config(state=DISABLED)
     scrollbar = Scrollbar(guichat, command=chat.yview)
     chat['yscrollcommand'] = scrollbar.set
-    Button1 = Button(guichat, text="Envoyer", command=send)
+    button1 = Button(guichat, text="Envoyer", command=send)
     Message = StringVar()
     Entry1 = Entry(guichat, textvariable=Message, bg='bisque', fg='maroon')
     scrollbar.place(x=780, y=0, height=390)
     chat.place(x=5, y=5, height=390, width=770)
     Entry1.place(x=5, y=410, height=30, width=650)
-    Button1.place(x=680, y=410, height=30, width=100)
+    button1.place(x=680, y=410, height=30, width=100)
     thread_1 = RefreshMessages()
     thread_1.start()
     guichat.mainloop()
