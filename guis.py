@@ -5,63 +5,59 @@ from tkinter.messagebox import *
 from functions import *
 
 def gui_login():
-
     def registerbutton(event):
         gui_register()
 
     def loginbutton():
-        username = str(entree_username.get())
-        password = str(entree_password.get())
+        username = str(username_entry.get())
+        password = str(password_entry.get())
         log = login(username, password)
-        if log == True:
-            fenetre.destroy()
+        if log is True:
+            guilogin.destroy()
             gui_menu(username, password)
-        elif log == "err1":
-            showwarning('ERR1', 'SERVEUR INACESSIBLE')
-        elif log == "err3":
-            showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
-        else:
+        elif log is False:
             showwarning("ERR2", "NOM D'UTILISATEUR OU MOT DE PASSE INVALIDE")
-            username_entry.set('')
-            password_entry.set('')
+            password_textvariable.set('')
 
-    fenetre = Tk()
-    fenetre.resizable(width=FALSE, height=FALSE)
-    fenetre.title("Connexion")
-    fenetre.geometry("300x150")
 
-    username_entry = StringVar()
-    password_entry = StringVar()
+    guilogin = Tk()
+    set_icon(guilogin)
+    guilogin.resizable(width=FALSE, height=FALSE)
+    guilogin.title("PYCHAT | CONNEXION")
+    guilogin.geometry("300x150")
 
-    username_text = Label(fenetre, text="Nom d'utilisateur:")
-    entree_username = Entry(fenetre, textvariable=username_entry, width=30)
+    password_textvariable = StringVar()
+    username_textvariable = StringVar()
 
-    password_text = Label(fenetre, text="Mot de passe:")
-    entree_password = Entry(fenetre, textvariable=password_entry, show="*", width=30)
+    username_text = Label(guilogin, text="Nom d'utilisateur:")
+    username_entry = Entry(guilogin, textvariable=username_textvariable, width=30)
 
-    bouton = Button(fenetre, text="Se connecter", command=loginbutton)
+    password_text = Label(guilogin, text="Mot de passe:")
+    password_entry = Entry(guilogin, textvariable=password_textvariable, show="*", width=30)
 
-    link = Label(fenetre, text="S'inscrire", fg="blue", cursor="hand2")
+    button = Button(guilogin, text="Se connecter", command=loginbutton)
+
+    link = Label(guilogin, text="S'inscrire", fg="blue", cursor="hand2")
 
     username_text.pack()
-    entree_username.pack()
+    username_entry.pack()
     password_text.pack()
-    entree_password.pack()
-    bouton.pack()
+    password_entry.pack()
+    button.pack()
     link.pack()
 
     link.bind("<Button-1>", registerbutton)
 
-    fenetre.mainloop()
+    guilogin.mainloop()
 
 def gui_register():
 
     def resgisterbutton():
-        username = str(entree_username.get())
-        password = str(entree_password.get())
-        first_name = str(entree_first_name.get())
-        last_name = str(entree_last_name.get())
-        email = str(entree_email.get())
+        username = str(username_entry.get())
+        password = str(password_entry.get())
+        first_name = str(first_name_entry.get())
+        last_name = str(last_name_entry.get())
+        email = str(email_entry.get())
         if len(password) <= 16 and len(password) >= 8:
             password_test = True
         else:
@@ -69,57 +65,54 @@ def gui_register():
         email_regex = re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email)
         if email_regex is not None and password_test == True:
             log = register(username, password, first_name, last_name, email)
-            if log == True:
+            if log is True:
                 registerwindow.destroy()
-            elif log == "err1":
-                showwarning('ERR1', 'SERVEUR INACESSIBLE')
-            elif log == "err3":
-                showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
-            elif log == "err4":
+            elif log is False:
                 showwarning('ERR4', "NOM D'UTILISATEUR OU EMAIL NON DISPONIBLE")
         else:
             showwarning('ERREUR', 'EMAIL OU MOT DE PASSE INVALIDE')
     registerwindow = Tk()
-    registerwindow.title("Inscription")
+    set_icon(registerwindow)
+    registerwindow.title("PYCHAT | INSCRIPTION")
 
-    username_entry = StringVar()
-    password_entry = StringVar()
-    first_name_entry = StringVar()
-    last_name_entry = StringVar()
-    email_entry = StringVar()
+    username_textvariable = StringVar()
+    password_textvariable = StringVar()
+    first_name_textvariable = StringVar()
+    last_name_textvariable = StringVar()
+    email_textvariable = StringVar()
 
     username_text = Label(registerwindow, text="Nom d'utilisateur:")
-    entree_username = Entry(registerwindow, textvariable=username_entry, width=50)
+    username_entry = Entry(registerwindow, textvariable=username_textvariable, width=50)
 
     password_text = Label(registerwindow, text="Mot de passe:")
-    entree_password = Entry(registerwindow, textvariable=password_entry, show="*", width=50)
+    password_entry = Entry(registerwindow, textvariable=password_textvariable, show="*", width=50)
 
     first_name_text = Label(registerwindow, text="Prénom:")
-    entree_first_name = Entry(registerwindow, textvariable=first_name_entry, show="", width=50)
+    first_name_entry = Entry(registerwindow, textvariable=first_name_textvariable, show="", width=50)
 
     last_name_text = Label(registerwindow, text="Nom de famille:")
-    entree_last_name = Entry(registerwindow, textvariable=last_name_entry, show="", width=50)
+    last_name_entry = Entry(registerwindow, textvariable=last_name_textvariable, show="", width=50)
 
     email_text = Label(registerwindow, text="email:")
-    entree_email = Entry(registerwindow, textvariable=email_entry, show="", width=50)
+    email_entry = Entry(registerwindow, textvariable=email_textvariable, show="", width=50)
 
-    bouton = Button(registerwindow, text="S'inscrire", command=resgisterbutton)
+    button = Button(registerwindow, text="S'inscrire", command=resgisterbutton)
 
     username_text.pack()
-    entree_username.pack()
+    username_entry.pack()
     password_text.pack()
-    entree_password.pack()
+    password_entry.pack()
     first_name_text.pack()
-    entree_first_name.pack()
+    first_name_entry.pack()
     last_name_text.pack()
-    entree_last_name.pack()
+    last_name_entry.pack()
     email_text.pack()
-    entree_email.pack()
-    bouton.pack()
+    email_entry.pack()
+    button.pack()
     registerwindow.mainloop()
 
 def gui_join(a, b):
-    def join_chan():
+    def join_chan_call_gui():
         guimenu.destroy()
         gui_join(username, userpassword)
 
@@ -131,25 +124,31 @@ def gui_join(a, b):
     username = a
     userpassword = b
     def join_chan():
-        channel = str(entree_utilisateur_join_channel_id.get())
-        password = str(entree_utilisateur_join_channel_password.get())
-        id_regex = re.match(r"[#]*\d+", channel)
-        id_regex2 = re.match(r"[#]+\d+", channel)
+        channel = str(channel_id_entry.get())
+        password = str(channel_password_entry.get())
+        id_regex = re.match(r"^[#]*\d+$", channel)
+        id_regex2 = re.match(r"^[#]+\d+$", channel)
         if id_regex is not None:
             if id_regex2 is not None:
                 channel = channel[1:]
-            if connexion_channel(channel, password) is True:
+            con = connexion_channel(channel, password)
+            if con is True:
                 guimenu.destroy()
                 gui_chat(username, userpassword, channel, password)
+            elif con is False:
+                showwarning("ERR4", "ID OU MOT DE PASSE INVALIDE")
+        else:
+            showwarning("ERR4", "ID OU MOT DE PASSE INVALIDE")
 
     guimenu = Tk()
-    guimenu.title("Menu")
+    set_icon(guimenu)
+    guimenu.title("PYCHAT | REJOINDRE UN CANAL")
     guimenu.geometry("300x150")
     guimenu.resizable(width=FALSE, height=FALSE)
     menubar = Menu(guimenu)
     menu1 = Menu(menubar, tearoff=0)
     menu1.add_command(label="Créer", command=create_chan)
-    menu1.add_command(label="Rejoindre", command=join_chan)
+    menu1.add_command(label="Rejoindre", command=join_chan_call_gui)
     menu1.add_separator()
     menu1.add_command(label="Quitter", command=guimenu.quit)
     menubar.add_cascade(label="Canal", menu=menu1)
@@ -161,21 +160,21 @@ def gui_join(a, b):
     guimenu.config(menu=menubar)
 
 
-    join_channel_user_entry_id = StringVar()
+    channel_id_textvariable = StringVar()
     join_channel_text_id = Label(guimenu, text="ID du canal à rejoindre:")
-    entree_utilisateur_join_channel_id = Entry(guimenu, textvariable=join_channel_user_entry_id, width=30)
+    channel_id_entry = Entry(guimenu, textvariable=channel_id_textvariable, width=30)
 
-    join_channel_user_entry_password = StringVar()
+    channel_password_textvariable = StringVar()
     join_channel_text_password = Label(guimenu, text="Mot de passe du canal à rejoindre:")
-    entree_utilisateur_join_channel_password = Entry(guimenu, textvariable=join_channel_user_entry_password, width=30)
+    channel_password_entry = Entry(guimenu, textvariable=channel_password_textvariable, width=30)
 
-    bouton1 = Button(guimenu, text="Rejoindre le canal", command=join_chan)
+    button1 = Button(guimenu, text="Rejoindre le canal", command=join_chan)
 
     join_channel_text_id.pack()
-    entree_utilisateur_join_channel_id.pack()
+    channel_id_entry.pack()
     join_channel_text_password.pack()
-    entree_utilisateur_join_channel_password.pack()
-    bouton1.pack()
+    channel_password_entry.pack()
+    button1.pack()
 
     guimenu.mainloop()
     
@@ -191,17 +190,18 @@ def gui_create(a, b):
     username = a
     userpassword = b
     def create_channel():
-        channel = str(entree_utilisateur_create_channel_id.get())
-        password = str(entree_utilisateur_create_channel_password.get())
-        if used_channel(channel, password) is False:
+        channel = str(channel_id_entry.get())
+        password = str(channel_password_entry.get())
+        used = used_channel(channel, password)
+        if used is False:
             state = new_channel(a, channel, password)
             if state[0] is True:
                 guimenu.destroy()
                 gui_chat(a, b, state[1], password)
 
-
     guimenu = Tk()
-    guimenu.title("Menu")
+    set_icon(guimenu)
+    guimenu.title("PYCHAT | CRÉER UN CANAL")
     guimenu.geometry("300x150")
     guimenu.resizable(width=FALSE, height=FALSE)
     menubar = Menu(guimenu)
@@ -218,23 +218,23 @@ def gui_create(a, b):
 
     guimenu.config(menu=menubar)
 
-    create_channel_user_entry_id = StringVar()
+    channel_id_textvariable = StringVar()
     create_channel_text_id = Label(guimenu, text="Nom du canal à créer:")
-    entree_utilisateur_create_channel_id = Entry(guimenu, textvariable=create_channel_user_entry_id, width=30)
+    channel_id_entry = Entry(guimenu, textvariable=channel_id_textvariable, width=30)
 
-    create_channel_user_entry_password = StringVar()
+    channel_password_textvariable = StringVar()
     create_channel_text_password = Label(guimenu, text="PASSWORD du canal à créer:")
-    entree_utilisateur_create_channel_password = Entry(guimenu, textvariable=create_channel_user_entry_password, width=30)
+    channel_password_entry = Entry(guimenu, textvariable=channel_password_textvariable, width=30)
 
-    bouton2 = Button(guimenu, text="Créer le canal", command=create_channel)
+    button2 = Button(guimenu, text="Créer le canal", command=create_channel)
 
     create_channel_text_id.pack()
-    entree_utilisateur_create_channel_id.pack()
+    channel_id_entry.pack()
 
     create_channel_text_password.pack()
-    entree_utilisateur_create_channel_password.pack()
+    channel_password_entry.pack()
 
-    bouton2.pack()
+    button2.pack()
 
     guimenu.mainloop()
     
@@ -251,7 +251,8 @@ def gui_menu(a, b):
     username = a
     password = b
     guimenu = Tk()
-    guimenu.title("Menu")
+    set_icon(guimenu)
+    guimenu.title("PYCHAT | MENU")
     guimenu.geometry("320x90")
     guimenu.resizable(width=FALSE, height=FALSE)
 
@@ -267,8 +268,9 @@ def gui_menu(a, b):
 def gui_chat(a, b, c, d):
     def send():
         msg = str(Entry1.get())
-        sendmsg(username, channel, password, msg)
-        Message.set('')
+        if msg != "":
+            sendmsg(username, channel, password, msg)
+            Message.set('')
 
     class RefreshMessages(Thread):
         def __init__(self):
@@ -281,24 +283,25 @@ def gui_chat(a, b, c, d):
                     time.sleep(1)
                     global guichat
                     idlist = loadidslist(channel, password)
-                    for item in idlist:
-                        item = str(item)[1:-2]
-                        if (item not in localidlist) is True:
-                            data = get_msg(item, channel, password)
-                            localidlist.append(item)
-                            text = "[" + str(data[3]) + "] " + "<" + str(data[1]) + "> " + str(data[2]) + "\n"
-                            chat.config(state=NORMAL)
-                            chat.insert(END, text)
-                            chat.config(state=DISABLED)
+                    if idlist != "err3":
+                        for item in idlist:
+                            item = str(item)[1:-2]
+                            if (item not in localidlist) is True:
+                                data = get_msg(item, channel, password)
+                                localidlist.append(item)
+                                text = "[" + str(data[3]) + "] " + "<" + str(data[1]) + "> " + str(data[2]) + "\n"
+                                chat.config(state=NORMAL)
+                                chat.insert(END, text)
+                                chat.config(state=DISABLED)
                 except:
                     pass
 
     def join_chan():
-        guichat.destroy()
+        close()
         gui_join(username, password)
 
     def create_chan():
-        guichat.destroy()
+        close()
         gui_create(username, password)
 
     def del_chan():
@@ -309,8 +312,9 @@ def gui_chat(a, b, c, d):
             showwarning('ERR1', 'PAS LES DROITS')
 
     def close():
-        global Running
+        global Running, guichat
         Running = False
+        guichat.destroy()
 
     global username, userpassword, launch, Running, guichat, chat, Entry1, Message, channel, password, thread_1
     username = a
@@ -321,8 +325,9 @@ def gui_chat(a, b, c, d):
     launch = 1
     Running = True
     guichat = Tk()
-    guichat.title('PYCHAT #' + str(channel) + " - " + channel_name)
-    guichat.geometry("800x450")
+    set_icon(guichat)
+    guichat.title('PYCHAT | #' + str(channel) + " - " + channel_name)
+    guichat.geometry("800x470")
     guichat.resizable(width=FALSE, height=FALSE)
     menubar = Menu(guichat)
     menu1 = Menu(menubar, tearoff=0)
@@ -330,7 +335,7 @@ def gui_chat(a, b, c, d):
     menu1.add_command(label="Rejoindre", command=join_chan)
     menu1.add_command(label="Supprimer le canal", command=del_chan)
     menu1.add_separator()
-    menu1.add_command(label="Quitter", command=guichat.quit)
+    menu1.add_command(label="Quitter", command=close)
     menubar.add_cascade(label="Canal", menu=menu1)
 
     menu3 = Menu(menubar, tearoff=0)

@@ -9,6 +9,9 @@ import time
 from threading import Thread
 from tkinter.messagebox import *
 
+def set_icon(window):
+    window.wm_iconbitmap("pychat_icon.ico")
+
 def readcfg(list):
     config = configparser.ConfigParser()
     config.read('client_config.ini')
@@ -19,127 +22,160 @@ def readcfg(list):
 
 def connect(host, port):
     try :
-        connexion_avec_serveur = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        connexion_avec_serveur.connect((host, int(port)))
-        return connexion_avec_serveur
+        connexion_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        connexion_server.connect((host, int(port)))
+        return connexion_server
     except:
         return "err1"
 
+def send(message,connexion_server ):
+    connexion_server.send(pickle.dumps(message))
 
-def send(msg_a_envoyer,connexion_avec_serveur ):
-    msg_a_envoyer = pickle.dumps(msg_a_envoyer)
-    connexion_avec_serveur.send(msg_a_envoyer)
+def recv(connexion_server):
+    received_message = connexion_server.recv(1024)
+    return pickle.loads(received_message)
 
-def recv(connexion_avec_serveur):
-    msg_recu = connexion_avec_serveur.recv(1024)
-    stringdata = pickle.loads(msg_recu)
-    return stringdata
-
-def disconnect(connexion_avec_serveur):
-    connexion_avec_serveur.shutdown(1)
-    connexion_avec_serveur.close()
+def disconnect(connexion_server):
+    connexion_server.shutdown(1)
+    connexion_server.close()
 
 def login(username, password):
-    connexion_avec_serveur = connect(readcfg(['SOCKET','host']), readcfg(['SOCKET','port']))
-    if connexion_avec_serveur == "err1":
-        return "err1"
+    connexion_server = connect(readcfg(['SOCKET','host']), readcfg(['SOCKET','port']))
+    if connexion_server == "err1":
+        showwarning('ERR1', 'SERVEUR INACESSIBLE')
     else:
-        msg_a_envoyer = ["login", username, password]
-        send(msg_a_envoyer,connexion_avec_serveur)
-        stringdata = recv(connexion_avec_serveur)
-        disconnect(connexion_avec_serveur)
-        if stringdata == "logs ok":
+        message = ["login", username, password]
+        send(message,connexion_server)
+        received_message = recv(connexion_server)
+        disconnect(connexion_server)
+        if received_message is True:
             return True
-        else:
-            return stringdata
-
+        if received_message is False :
+            return False
+        elif received_message == "err3":
+            showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
 
 def sendmsg(username, channel, password,  msg):
-    connexion_avec_serveur = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
-    if connexion_avec_serveur == "err1":
-        return "err1"
+    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
+    if connexion_server == "err1":
+        showwarning('ERR1', 'SERVEUR INACESSIBLE')
     else:
-        msg_a_envoyer = ["sendmsg", username, channel, password, msg]
-        send(msg_a_envoyer, connexion_avec_serveur)
+        message = ["sendmsg", username, channel, password, msg]
+        send(message, connexion_server)
+        received_message = recv(connexion_server)
+        disconnect(connexion_server)
+        if received_message is True:
+            return True
+        elif received_message == "err3":
+            showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
 
 def connexion_channel(channel, password):
-    connexion_avec_serveur = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
-    if connexion_avec_serveur == "err1":
-        return "err1"
+    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
+    if connexion_server == "err1":
+        showwarning('ERR1', 'SERVEUR INACESSIBLE')
     else:
-        msg_a_envoyer = ["connexion_channel", channel, password]
-        send(msg_a_envoyer, connexion_avec_serveur)
-        data = recv(connexion_avec_serveur)
-        return data
+        message = ["connexion_channel", channel, password]
+        send(message, connexion_server)
+        received_message = recv(connexion_server)
+        if received_message == "err3":
+            showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
+        disconnect(connexion_server)
+        return received_message
+
 def used_channel(channel, password):
-    connexion_avec_serveur = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
-    if connexion_avec_serveur == "err1":
-        return "err1"
+    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
+    if connexion_server == "err1":
+        showwarning('ERR1', 'SERVEUR INACESSIBLE')
     else:
-        msg_a_envoyer = ["used_channel", channel, password]
-        send(msg_a_envoyer, connexion_avec_serveur)
-        data = recv(connexion_avec_serveur)
-        return data
+        message = ["used_channel", channel, password]
+        send(message, connexion_server)
+        received_message = recv(connexion_server)
+        if received_message == "err3":
+            showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
+        disconnect(connexion_server)
+        return received_message
+
 
 def new_channel(user, channel, password):
-    connexion_avec_serveur = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
-    if connexion_avec_serveur == "err1":
-        return "err1"
+    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
+    if connexion_server == "err1":
+        showwarning('ERR1', 'SERVEUR INACESSIBLE')
     else:
-        msg_a_envoyer = ["new_channel", user, channel, password]
-        send(msg_a_envoyer, connexion_avec_serveur)
-        data = recv(connexion_avec_serveur)
-        return data
+        message = ["new_channel", user, channel, password]
+        send(message, connexion_server)
+        received_message = recv(connexion_server)
+        if received_message == "err3":
+            showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
+        disconnect(connexion_server)
+        return received_message
+
 
 def chan_delete(username, userpassword, channel, password):
-    connexion_avec_serveur = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
-    if connexion_avec_serveur == "err1":
-        return "err1"
+    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
+    if connexion_server == "err1":
+        showwarning('ERR1', 'SERVEUR INACESSIBLE')
     else:
-        msg_a_envoyer = ["del_channel", username, userpassword, channel, password]
-        send(msg_a_envoyer, connexion_avec_serveur)
-        data = recv(connexion_avec_serveur)
-        return data
+        message = ["del_channel", username, userpassword, channel, password]
+        send(message, connexion_server)
+        received_message = recv(connexion_server)
+        if received_message == "err3":
+            showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
+        disconnect(connexion_server)
+        return received_message
 
 
 def loadidslist(channel, password):
-    connexion_avec_serveur = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
-    msg_a_envoyer = ["loadidslist", channel, password]
-    send(msg_a_envoyer, connexion_avec_serveur)
-    data = recv(connexion_avec_serveur)
-    disconnect(connexion_avec_serveur)
-    return data
+    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
+    if connexion_server == "err1":
+        print('ERR1', 'SERVEUR INACESSIBLE')
+    message = ["loadidslist", channel, password]
+    send(message, connexion_server)
+    received_message = recv(connexion_server)
+    if received_message == "err3":
+        print('ERR3', 'BASE DE DONNÉE INACESSIBLE')
+    disconnect(connexion_server)
+    return received_message
 
 
 def get_msg(id, channel, password):
-    connexion_avec_serveur = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
-    msg_a_envoyer = ["get_msg", id, channel, password]
-    send(msg_a_envoyer, connexion_avec_serveur)
-    data = recv(connexion_avec_serveur)
-    disconnect(connexion_avec_serveur)
-    return data
+    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
+    if connexion_server == "err1":
+        print('ERR1', 'SERVEUR INACESSIBLE')
+    message = ["get_msg", id, channel, password]
+    send(message, connexion_server)
+    received_message = recv(connexion_server)
+    if received_message == "err3":
+        print('ERR3', 'BASE DE DONNÉE INACESSIBLE')
+    disconnect(connexion_server)
+    return received_message
 
 def get_chan_name(channel):
-    connexion_avec_serveur = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
-    msg_a_envoyer = ["get_chan_name", channel]
-    send(msg_a_envoyer, connexion_avec_serveur)
-    data = recv(connexion_avec_serveur)
-    disconnect(connexion_avec_serveur)
-    return data
+    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
+    if connexion_server == "err1":
+        print('ERR1', 'SERVEUR INACESSIBLE')
+    message = ["get_chan_name", channel]
+    send(message, connexion_server)
+    received_message = recv(connexion_server)
+    if received_message == "err3":
+        print('ERR3', 'BASE DE DONNÉE INACESSIBLE')
+    disconnect(connexion_server)
+    return received_message
 
 def register(username, password, first_name, last_name, email):
-    connexion_avec_serveur = connect(readcfg(['SOCKET','host']), readcfg(['SOCKET','port']))
-    if connexion_avec_serveur == "err1":
-        return "err1"
+    connexion_server = connect(readcfg(['SOCKET','host']), readcfg(['SOCKET','port']))
+    if connexion_server == "err1":
+        showwarning('ERR1', 'SERVEUR INACESSIBLE')
     else:
-        msg_a_envoyer = ["register", username, password, first_name, last_name, email]
-        send(msg_a_envoyer,connexion_avec_serveur)
-        stringdata = recv(connexion_avec_serveur)
-        disconnect(connexion_avec_serveur)
-        if stringdata == "reg ok":
+        message = ["register", username, password, first_name, last_name, email]
+        send(message,connexion_server)
+        received_message = recv(connexion_server)
+        disconnect(connexion_server)
+        if received_message == "err3":
+            showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
+        if received_message is True:
             return True
-        else:
-            return stringdata
+        elif received_message is False:
+            return False
 
 
 def check_cfg():
