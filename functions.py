@@ -132,6 +132,18 @@ def chan_delete(username, userpassword, channel, password):
         disconnect(connexion_server)
         return received_message
 
+def chan_clear(username, userpassword, channel, password):
+    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
+    if connexion_server == "err1":
+        showwarning('ERR1', 'SERVEUR INACESSIBLE')
+    else:
+        message = ["clear_channel", username, userpassword, channel, password]
+        send(message, connexion_server)
+        received_message = recv(connexion_server)
+        if received_message == "err3":
+            showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
+        disconnect(connexion_server)
+        return received_message
 
 def loadidslist(channel, password):
     connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))

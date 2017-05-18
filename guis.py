@@ -289,6 +289,11 @@ def gui_chat(a, b, c, d):
                     time.sleep(1)
                     global guichat
                     idlist = loadidslist(channel, password)
+                    print(idlist)
+                    if idlist == []:
+                        chat.config(state=NORMAL)
+                        chat.delete(1.0, END)
+                        chat.config(state=DISABLED)
                     if idlist != "err3":
                         for item in idlist:
                             item = str(item)[1:-2]
@@ -317,6 +322,14 @@ def gui_chat(a, b, c, d):
         else:
             showwarning('ERR1', 'PAS LES DROITS')
 
+    def clear_chan():
+        if chan_clear(username, userpassword, channel, password) is True:
+            chat.config(state=NORMAL)
+            chat.delete(1.0, END)
+            chat.config(state=DISABLED)
+        else:
+            showwarning('ERR1', 'PAS LES DROITS')
+
     def close():
         global Running, guichat
         Running = False
@@ -340,6 +353,7 @@ def gui_chat(a, b, c, d):
     menu1.add_command(label="Créer", command=create_chan)
     menu1.add_command(label="Rejoindre", command=join_chan)
     menu1.add_command(label="Supprimer le canal", command=del_chan)
+    menu1.add_command(label="Supprimer les messages", command=clear_chan)
     menu1.add_separator()
     menu1.add_command(label="Quitter", command=close)
     menubar.add_cascade(label="Canal", menu=menu1)
