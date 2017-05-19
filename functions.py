@@ -118,6 +118,7 @@ def chan_delete(username, userpassword, channel, password):
         disconnect(connexion_server)
         return received_message
 
+
 def chan_clear(username, userpassword, channel, password):
     connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
     if connexion_server == "err1":
@@ -130,6 +131,7 @@ def chan_clear(username, userpassword, channel, password):
             showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
         disconnect(connexion_server)
         return received_message
+
 
 def loadidslist(channel, password):
     connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
@@ -212,6 +214,7 @@ def check_cfg():
             config['SOCKET']['port'] = '1111'
             with open('client_config.ini', 'w') as configfile:
                 config.write(configfile)
+
 
 def check_version(clientversion):
     connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))

@@ -3,6 +3,11 @@
 from tkinter import *
 from tkinter.messagebox import *
 from functions import *
+import webbrowser
+
+
+def help():
+    webbrowser.open('https://www.exnihil.io/pychat/help/help.pdf')
 
 
 def gui_login():
@@ -56,7 +61,6 @@ def gui_login():
 
 
 def gui_register():
-
     def resgisterbutton():
         username = str(username_entry.get())
         password = str(password_entry.get())
@@ -79,7 +83,6 @@ def gui_register():
 
     def enter(event):
         resgisterbutton()
-
 
     registerwindow = Tk()
     registerwindow.resizable(width=FALSE, height=FALSE)
@@ -175,7 +178,7 @@ def gui_join(a, b):
     menubar.add_cascade(label="Canal", menu=menu1)
 
     menu3 = Menu(menubar, tearoff=0)
-    menu3.add_command(label="A propos")
+    menu3.add_command(label="Manuel en ligne", command=help)
     menubar.add_cascade(label="Aide", menu=menu3)
 
     guimenu.config(menu=menubar)
@@ -239,7 +242,7 @@ def gui_create(a, b):
     menubar.add_cascade(label="Canal", menu=menu1)
 
     menu3 = Menu(menubar, tearoff=0)
-    menu3.add_command(label="A propos")
+    menu3.add_command(label="Manuel en ligne", command=help)
     menubar.add_cascade(label="Aide", menu=menu3)
 
     guimenu.config(menu=menubar)
@@ -402,7 +405,7 @@ def gui_chat(a, b, c, d):
     menubar.add_cascade(label="Canal", menu=menu1)
 
     menu3 = Menu(menubar, tearoff=0)
-    menu3.add_command(label="A propos")
+    menu3.add_command(label="Manuel en ligne", command=help)
     menubar.add_cascade(label="Aide", menu=menu3)
 
     guichat.config(menu=menubar)
