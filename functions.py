@@ -91,20 +91,6 @@ def connexion_channel(channel, password):
         return received_message
 
 
-def used_channel(channel, password):
-    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
-    if connexion_server == "err1":
-        showwarning('ERR1', 'SERVEUR INACESSIBLE')
-    else:
-        message = ["used_channel", channel, password]
-        send(message, connexion_server)
-        received_message = recv(connexion_server)
-        if received_message == "err3":
-            showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
-        disconnect(connexion_server)
-        return received_message
-
-
 def new_channel(user, channel, password):
     connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
     if connexion_server == "err1":
@@ -226,3 +212,19 @@ def check_cfg():
             config['SOCKET']['port'] = '1111'
             with open('client_config.ini', 'w') as configfile:
                 config.write(configfile)
+
+def check_version(clientversion):
+    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
+    if connexion_server == "err1":
+        showwarning('ERR1', 'SERVEUR INACESSIBLE')
+    else:
+        message = ["check_version", clientversion]
+        send(message, connexion_server)
+        received_message = recv(connexion_server)
+        disconnect(connexion_server)
+        if received_message == "err3":
+            showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
+        if received_message is True:
+            return True
+        elif received_message is False:
+            return False

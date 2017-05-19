@@ -195,14 +195,12 @@ def gui_create(a, b):
     userpassword = b
 
     def create_channel():
-        channel = str(channel_id_entry.get())
+        channel = str(channel_name_entry.get())
         password = str(channel_password_entry.get())
-        used = used_channel(channel, password)
-        if used is False:
-            state = new_channel(a, channel, password)
-            if state[0] is True:
-                guimenu.destroy()
-                gui_chat(a, b, state[1], password)
+        state = new_channel(a, channel, password)
+        if state[0] is True:
+            guimenu.destroy()
+            gui_chat(a, b, state[1], password)
 
     guimenu = Tk()
     set_icon(guimenu)
@@ -223,9 +221,9 @@ def gui_create(a, b):
 
     guimenu.config(menu=menubar)
 
-    channel_id_textvariable = StringVar()
-    create_channel_text_id = Label(guimenu, text="Nom du canal à créer:")
-    channel_id_entry = Entry(guimenu, textvariable=channel_id_textvariable, width=30)
+    channel_name_textvariable = StringVar()
+    create_channel_text_name = Label(guimenu, text="Nom du canal à créer:")
+    channel_name_entry = Entry(guimenu, textvariable=channel_name_textvariable, width=30)
 
     channel_password_textvariable = StringVar()
     create_channel_text_password = Label(guimenu, text="PASSWORD du canal à créer:")
@@ -233,8 +231,8 @@ def gui_create(a, b):
 
     button2 = Button(guimenu, text="Créer le canal", command=create_channel)
 
-    create_channel_text_id.pack()
-    channel_id_entry.pack()
+    create_channel_text_name.pack()
+    channel_name_entry.pack()
 
     create_channel_text_password.pack()
     channel_password_entry.pack()
@@ -283,13 +281,14 @@ def gui_chat(a, b, c, d):
             Thread.__init__(self)
 
         def run(self):
+            global localidlist
             localidlist = []
             while Running is True:
                 try:
+                    print(localidlist)
                     time.sleep(1)
                     global guichat
                     idlist = loadidslist(channel, password)
-                    print(idlist)
                     if idlist == []:
                         chat.config(state=NORMAL)
                         chat.delete(1.0, END)
@@ -300,7 +299,8 @@ def gui_chat(a, b, c, d):
                             if (item not in localidlist) is True:
                                 data = get_msg(item, channel, password)
                                 localidlist.append(item)
-                                text = "[" + str(data[3]) + "] " + "<" + str(data[1]) + "> " + str(data[2]) + "\n"
+                                date = data[3]
+                                text = "[" + str(date[2]) + "/" + date[1] + "/" + date[0]+ " | " + str(date[3]) + ":" + date[4] + ":" + date[5]+ "] " + "<" + str(data[1]) + "> " + str(data[2]) + "\n"
                                 chat.config(state=NORMAL)
                                 chat.insert(END, text)
                                 chat.config(state=DISABLED)
@@ -309,11 +309,11 @@ def gui_chat(a, b, c, d):
 
     def join_chan():
         close()
-        gui_join(username, password)
+        gui_join(username, userpassword)
 
     def create_chan():
         close()
-        gui_create(username, password)
+        gui_create(username, userpassword)
 
     def del_chan():
         if chan_delete(username, userpassword, channel, password) is True:
@@ -324,6 +324,8 @@ def gui_chat(a, b, c, d):
 
     def clear_chan():
         if chan_clear(username, userpassword, channel, password) is True:
+            global localidlist
+            localidlist.clear()
             chat.config(state=NORMAL)
             chat.delete(1.0, END)
             chat.config(state=DISABLED)
