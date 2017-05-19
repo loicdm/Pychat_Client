@@ -376,8 +376,7 @@ def gui_chat(a, b, c, d):
             showwarning('ERR1', 'PAS LES DROITS')
 
     def close():
-        global Running, guichat
-        Running = False
+        global guichat
         guichat.destroy()
 
     global username, userpassword, launch, Running, guichat, chat, Entry1, Message, channel, password, thread_1
@@ -423,4 +422,4 @@ def gui_chat(a, b, c, d):
     thread_1 = RefreshMessages()
     thread_1.start()
     guichat.mainloop()
-    close()
+    Running = False
