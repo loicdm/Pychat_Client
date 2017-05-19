@@ -20,6 +20,9 @@ def gui_login():
             showwarning("ERR2", "NOM D'UTILISATEUR OU MOT DE PASSE INVALIDE")
             password_textvariable.set('')
 
+    def enter(event):
+        loginbutton()
+
     guilogin = Tk()
     set_icon(guilogin)
     guilogin.resizable(width=FALSE, height=FALSE)
@@ -45,13 +48,15 @@ def gui_login():
     password_entry.pack()
     button.pack()
     link.pack()
-
+    username_entry.bind("<Return>", enter)
+    password_entry.bind("<Return>", enter)
     link.bind("<Button-1>", registerbutton)
 
     guilogin.mainloop()
 
 
 def gui_register():
+
     def resgisterbutton():
         username = str(username_entry.get())
         password = str(password_entry.get())
@@ -72,7 +77,12 @@ def gui_register():
         else:
             showwarning('ERREUR', 'EMAIL OU MOT DE PASSE INVALIDE')
 
+    def enter(event):
+        resgisterbutton()
+
+
     registerwindow = Tk()
+    registerwindow.resizable(width=FALSE, height=FALSE)
     set_icon(registerwindow)
     registerwindow.title("PYCHAT | INSCRIPTION")
 
@@ -84,18 +94,23 @@ def gui_register():
 
     username_text = Label(registerwindow, text="Nom d'utilisateur:")
     username_entry = Entry(registerwindow, textvariable=username_textvariable, width=50)
+    username_entry.bind("<Return>", enter)
 
     password_text = Label(registerwindow, text="Mot de passe:")
     password_entry = Entry(registerwindow, textvariable=password_textvariable, show="*", width=50)
+    password_entry.bind("<Return>", enter)
 
     first_name_text = Label(registerwindow, text="Prénom:")
     first_name_entry = Entry(registerwindow, textvariable=first_name_textvariable, show="", width=50)
+    first_name_entry.bind("<Return>", enter)
 
     last_name_text = Label(registerwindow, text="Nom de famille:")
     last_name_entry = Entry(registerwindow, textvariable=last_name_textvariable, show="", width=50)
+    last_name_entry.bind("<Return>", enter)
 
     email_text = Label(registerwindow, text="email:")
     email_entry = Entry(registerwindow, textvariable=email_textvariable, show="", width=50)
+    email_entry.bind("<Return>", enter)
 
     button = Button(registerwindow, text="S'inscrire", command=resgisterbutton)
 
@@ -143,6 +158,9 @@ def gui_join(a, b):
         else:
             showwarning("ERR4", "ID OU MOT DE PASSE INVALIDE")
 
+    def enter(event):
+        join_chan()
+
     guimenu = Tk()
     set_icon(guimenu)
     guimenu.title("PYCHAT | REJOINDRE UN CANAL")
@@ -165,10 +183,12 @@ def gui_join(a, b):
     channel_id_textvariable = StringVar()
     join_channel_text_id = Label(guimenu, text="ID du canal à rejoindre:")
     channel_id_entry = Entry(guimenu, textvariable=channel_id_textvariable, width=30)
+    channel_id_entry.bind("<Return>", enter)
 
     channel_password_textvariable = StringVar()
     join_channel_text_password = Label(guimenu, text="Mot de passe du canal à rejoindre:")
     channel_password_entry = Entry(guimenu, textvariable=channel_password_textvariable, width=30)
+    channel_password_entry.bind("<Return>", enter)
 
     button1 = Button(guimenu, text="Rejoindre le canal", command=join_chan)
 
@@ -202,6 +222,9 @@ def gui_create(a, b):
             guimenu.destroy()
             gui_chat(a, b, state[1], password)
 
+    def enter(event):
+        create_channel()
+
     guimenu = Tk()
     set_icon(guimenu)
     guimenu.title("PYCHAT | CRÉER UN CANAL")
@@ -224,10 +247,12 @@ def gui_create(a, b):
     channel_name_textvariable = StringVar()
     create_channel_text_name = Label(guimenu, text="Nom du canal à créer:")
     channel_name_entry = Entry(guimenu, textvariable=channel_name_textvariable, width=30)
+    channel_name_entry.bind("<Return>", enter)
 
     channel_password_textvariable = StringVar()
     create_channel_text_password = Label(guimenu, text="PASSWORD du canal à créer:")
     channel_password_entry = Entry(guimenu, textvariable=channel_password_textvariable, width=30)
+    channel_password_entry.bind("<Return>", enter)
 
     button2 = Button(guimenu, text="Créer le canal", command=create_channel)
 
@@ -272,9 +297,12 @@ def gui_menu(a, b):
 def gui_chat(a, b, c, d):
     def send():
         msg = str(Entry1.get())
-        if msg != "":
+        if msg != "" and len(msg) <= 140:
             sendmsg(username, channel, password, msg)
             Message.set('')
+
+    def enter(event):
+        send()
 
     class RefreshMessages(Thread):
         def __init__(self):
@@ -290,6 +318,7 @@ def gui_chat(a, b, c, d):
                     global guichat
                     idlist = loadidslist(channel, password)
                     if idlist == []:
+                        localidlist.clear()
                         chat.config(state=NORMAL)
                         chat.delete(1.0, END)
                         chat.config(state=DISABLED)
@@ -300,9 +329,21 @@ def gui_chat(a, b, c, d):
                                 data = get_msg(item, channel, password)
                                 localidlist.append(item)
                                 date = data[3]
-                                text = "[" + str(date[2]) + "/" + date[1] + "/" + date[0]+ " | " + str(date[3]) + ":" + date[4] + ":" + date[5]+ "] " + "<" + str(data[1]) + "> " + str(data[2]) + "\n"
+                                date = "[" + str(date[2]) + "/" + date[1] + "/" + date[0] + " | " + str(date[3]) + ":" + \
+                                       date[4] + ":" + date[5] + "] "
+                                pseudo = "<" + str(data[1]) + "> "
+                                textmessage = str(data[2]) + "\n"
+                                text = date + pseudo + textmessage
                                 chat.config(state=NORMAL)
                                 chat.insert(END, text)
+                                tag1_arg1 = str(len(localidlist)) + ".0"
+                                tag1_arg2 = str(len(localidlist)) + "." + str(len(date))
+                                tag2_arg1 = str(len(localidlist)) + "." + str(len(date))
+                                tag2_arg2 = str(len(localidlist)) + "." + str(len(date) + len(pseudo))
+                                chat.tag_add("date", tag1_arg1, tag1_arg2)
+                                chat.tag_config("date", foreground="green")
+                                chat.tag_add("pseudo", tag2_arg1, tag2_arg2)
+                                chat.tag_config("pseudo", foreground="blue")
                                 chat.config(state=DISABLED)
                 except:
                     pass
@@ -371,7 +412,8 @@ def gui_chat(a, b, c, d):
     chat['yscrollcommand'] = scrollbar.set
     button1 = Button(guichat, text="Envoyer", command=send)
     Message = StringVar()
-    Entry1 = Entry(guichat, textvariable=Message, bg='bisque', fg='maroon')
+    Entry1 = Entry(guichat, textvariable=Message, bg='light gray', fg='black')
+    Entry1.bind("<Return>", enter)
     scrollbar.place(x=780, y=0, height=390)
     chat.place(x=5, y=5, height=390, width=770)
     Entry1.place(x=5, y=410, height=30, width=650)
