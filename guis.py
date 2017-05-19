@@ -316,7 +316,6 @@ def gui_chat(a, b, c, d):
             localidlist = []
             while Running is True:
                 try:
-                    print(localidlist)
                     time.sleep(1)
                     global guichat
                     idlist = loadidslist(channel, password)
