@@ -8,5 +8,3 @@ version = "1.0.2"
 if check_version(version) is True:
     check_cfg()
     gui_login()
-else:
-    showwarning('ERR0', 'LES VERSIONS DU CLIENT ET DU SERVEUR NE CONCORDENT PAS!')

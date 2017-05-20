@@ -230,4 +230,5 @@ def check_version(clientversion):
         if received_message is True:
             return True
         elif received_message is False:
+            showwarning('ERR0', 'LES VERSIONS DU CLIENT ET DU SERVEUR NE CONCORDENT PAS!')
             return False
