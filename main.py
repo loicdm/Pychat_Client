@@ -3,7 +3,7 @@
 from functions import *
 from guis import *
 
-version = "1.0.2"
+version = "1.0.3"
 
 if check_version(version) is True:
     check_cfg()

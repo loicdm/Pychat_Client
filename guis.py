@@ -351,16 +351,25 @@ def gui_chat(a, b, c, d):
                     pass
 
     def join_chan():
+        global Running, localidlist
         close()
+        Running = False
+        localidlist.clear()
         gui_join(username, userpassword)
 
     def create_chan():
+        global Running, localidlist
         close()
+        Running = False
+        localidlist.clear()
         gui_create(username, userpassword)
 
     def del_chan():
         if chan_delete(username, userpassword, channel, password) is True:
-            guichat.destroy()
+            global Running, localidlist
+            close()
+            Running = False
+            localidlist.clear()
             gui_menu(username, userpassword)
         else:
             showwarning('ERR1', 'PAS LES DROITS')
