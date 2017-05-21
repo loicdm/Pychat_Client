@@ -4,7 +4,6 @@ from tkinter import *
 from tkinter.messagebox import *
 from functions import *
 import webbrowser
-import winsound
 
 
 def help():
@@ -18,13 +17,14 @@ def gui_login():
     def loginbutton():
         username = str(username_entry.get())
         password = str(password_entry.get())
-        log = login(username, password)
-        if log is True:
-            guilogin.destroy()
-            gui_menu(username, password)
-        elif log is False:
-            showwarning("ERR2", "NOM D'UTILISATEUR OU MOT DE PASSE INVALIDE")
-            password_textvariable.set('')
+        if username and password:
+            log = login(username, password)
+            if log is True:
+                guilogin.destroy()
+                gui_menu(username, password)
+            elif log is False:
+                showwarning("ERR2", "NOM D'UTILISATEUR OU MOT DE PASSE INVALIDE")
+                password_textvariable.set('')
 
     def enter(event):
         loginbutton()
@@ -68,19 +68,20 @@ def gui_register():
         first_name = str(first_name_entry.get())
         last_name = str(last_name_entry.get())
         email = str(email_entry.get())
-        if 16 >= len(password) >= 8:
-            password_test = True
-        else:
-            password_test = False
-        email_regex = re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email)
-        if email_regex is not None and password_test is True:
-            log = register(username, password, first_name, last_name, email)
-            if log is True:
-                registerwindow.destroy()
-            elif log is False:
-                showwarning('ERR4', "NOM D'UTILISATEUR OU EMAIL NON DISPONIBLE")
-        else:
-            showwarning('ERREUR', 'EMAIL OU MOT DE PASSE INVALIDE')
+        if username and password and first_name and last_name and email:
+            if 16 >= len(password) >= 8:
+                password_test = True
+            else:
+                password_test = False
+            email_regex = re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email)
+            if email_regex is not None and password_test is True:
+                log = register(username, password, first_name, last_name, email)
+                if log is True:
+                    registerwindow.destroy()
+                elif log is False:
+                    showwarning('ERR4', "NOM D'UTILISATEUR OU EMAIL NON DISPONIBLE")
+            else:
+                showwarning('ERREUR', 'EMAIL OU MOT DE PASSE INVALIDE')
 
     def enter(event):
         resgisterbutton()
@@ -150,17 +151,18 @@ def gui_join(a, b):
         password = str(channel_password_entry.get())
         id_regex = re.match(r"^[#]*\d+$", channel)
         id_regex2 = re.match(r"^[#]+\d+$", channel)
-        if id_regex is not None:
-            if id_regex2 is not None:
-                channel = channel[1:]
-            con = connexion_channel(channel, password)
-            if con is True:
-                guimenu.destroy()
-                gui_chat(username, userpassword, channel, password)
-            elif con is False:
+        if channel:
+            if id_regex is not None:
+                if id_regex2 is not None:
+                    channel = channel[1:]
+                con = connexion_channel(channel, password)
+                if con is True:
+                    guimenu.destroy()
+                    gui_chat(username, userpassword, channel, password)
+                elif con is False:
+                    showwarning("ERR4", "ID OU MOT DE PASSE INVALIDE")
+            else:
                 showwarning("ERR4", "ID OU MOT DE PASSE INVALIDE")
-        else:
-            showwarning("ERR4", "ID OU MOT DE PASSE INVALIDE")
 
     def enter(event):
         join_chan()
@@ -221,10 +223,11 @@ def gui_create(a, b):
     def create_channel():
         channel = str(channel_name_entry.get())
         password = str(channel_password_entry.get())
-        state = new_channel(a, channel, password)
-        if state[0] is True:
-            guimenu.destroy()
-            gui_chat(a, b, state[1], password)
+        if channel:
+            state = new_channel(a, channel, password)
+            if state[0] is True:
+                guimenu.destroy()
+                gui_chat(a, b, state[1], password)
 
     def enter(event):
         create_channel()
@@ -403,14 +406,15 @@ def gui_chat(a, b, c, d):
 
         def rename():
             new_channel_name = str(channel_rename_entry.get())
-            if rename_chan(username, userpassword, channel, password, new_channel_name) is True:
-                guirename.destroy()
-                global channel_name
-                channel_name = new_channel_name
-                guichat.title('PYCHAT | #' + str(channel) + " - " + channel_name)
+            if new_channel_name:
+                if rename_chan(username, userpassword, channel, password, new_channel_name) is True:
+                    guirename.destroy()
+                    global channel_name
+                    channel_name = new_channel_name
+                    guichat.title('PYCHAT | #' + str(channel) + " - " + channel_name)
 
-            else:
-                showwarning('ERR1', 'PAS LES DROITS')
+                else:
+                    showwarning('ERR1', 'PAS LES DROITS')
 
         def enter(event):
             rename()
