@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter.messagebox import *
 from functions import *
 import webbrowser
+import winsound
 
 
 def help():
@@ -314,17 +315,27 @@ def gui_chat(a, b, c, d):
         def run(self):
             global localidlist
             localidlist = []
+            unread = 0
             while Running is True:
                 try:
                     time.sleep(1)
-                    global guichat
+                    global channel_name, guichat
+                    channel_name = get_chan_name(channel)
                     idlist = loadidslist(channel, password)
+                    if guichat.focus_get() is not None:
+                        unread = 0
+                    if unread == 0:
+                        guichat.title('PYCHAT | #' + str(channel) + " - " + channel_name)
+                    else:
+                        guichat.title('(' + str(unread) + ') ' + 'PYCHAT | #' + str(channel) + " - " + channel_name)
                     if idlist == []:
                         localidlist.clear()
                         chat.config(state=NORMAL)
                         chat.delete(1.0, END)
                         chat.config(state=DISABLED)
-                    if idlist != "err3":
+                        unread = 0
+                        guichat.title('PYCHAT | #' + str(channel) + " - " + channel_name)
+                    elif idlist != "err3":
                         for item in idlist:
                             item = str(item)[1:-2]
                             if (item not in localidlist) is True:
@@ -347,6 +358,10 @@ def gui_chat(a, b, c, d):
                                 chat.tag_add("pseudo", tag2_arg1, tag2_arg2)
                                 chat.tag_config("pseudo", foreground="blue")
                                 chat.config(state=DISABLED)
+                                if guichat.focus_get() is None:
+                                    unread += 1
+
+
                 except:
                     pass
 
@@ -384,11 +399,44 @@ def gui_chat(a, b, c, d):
         else:
             showwarning('ERR1', 'PAS LES DROITS')
 
+    def rename_gui():
+
+        def rename():
+            new_channel_name = str(channel_rename_entry.get())
+            if rename_chan(username, userpassword, channel, password, new_channel_name) is True:
+                guirename.destroy()
+                global channel_name
+                channel_name = new_channel_name
+                guichat.title('PYCHAT | #' + str(channel) + " - " + channel_name)
+
+            else:
+                showwarning('ERR1', 'PAS LES DROITS')
+
+        def enter(event):
+            rename()
+
+        guirename = Tk()
+        set_icon(guirename)
+        guirename.title("PYCHAT | RENOMMER LE CANAL")
+        guirename.geometry("300x100")
+        guirename.resizable(width=FALSE, height=FALSE)
+
+        channel_rename_textvariable = StringVar()
+        rename_channel_text_name = Label(guirename, text="Nom du canal:")
+        channel_rename_entry = Entry(guirename, textvariable=channel_rename_textvariable, width=30)
+        channel_rename_entry.bind("<Return>", enter)
+        button2 = Button(guirename, text="Renommer le canal", command=rename)
+
+        rename_channel_text_name.pack()
+        channel_rename_entry.pack()
+        button2.pack()
+        guirename.mainloop()
+
     def close():
         global guichat
         guichat.destroy()
 
-    global username, userpassword, launch, Running, guichat, chat, Entry1, Message, channel, password, thread_1
+    global username, userpassword, launch, Running, guichat, chat, Entry1, Message, channel, channel_name, password, thread_1
     username = a
     userpassword = b
     channel = c
@@ -405,6 +453,7 @@ def gui_chat(a, b, c, d):
     menu1 = Menu(menubar, tearoff=0)
     menu1.add_command(label="Créer", command=create_chan)
     menu1.add_command(label="Rejoindre", command=join_chan)
+    menu1.add_command(label="Renommer le canal", command=rename_gui)
     menu1.add_command(label="Supprimer le canal", command=del_chan)
     menu1.add_command(label="Supprimer les messages", command=clear_chan)
     menu1.add_separator()

@@ -133,6 +133,20 @@ def chan_clear(username, userpassword, channel, password):
         return received_message
 
 
+def rename_chan(username, userpassword, channel, password, new_channel_name):
+    connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
+    if connexion_server == "err1":
+        showwarning('ERR1', 'SERVEUR INACESSIBLE')
+    else:
+        message = ["rename_chan", username, userpassword, channel, password, new_channel_name]
+        send(message, connexion_server)
+        received_message = recv(connexion_server)
+        if received_message == "err3":
+            showwarning('ERR3', 'BASE DE DONNÉE INACESSIBLE')
+        disconnect(connexion_server)
+        return received_message
+
+
 def loadidslist(channel, password):
     connexion_server = connect(readcfg(['SOCKET', 'host']), readcfg(['SOCKET', 'port']))
     if connexion_server == "err1":
