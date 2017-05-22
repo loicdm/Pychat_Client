@@ -316,55 +316,62 @@ def gui_chat(a, b, c, d):
             Thread.__init__(self)
 
         def run(self):
-            global localidlist
+            global localidlist, idlist, Running, channel_name, guichat
             localidlist = []
             unread = 0
             while Running is True:
                 try:
                     time.sleep(1)
-                    global channel_name, guichat
-                    channel_name = get_chan_name(channel)
-                    idlist = loadidslist(channel, password)
-                    if guichat.focus_get() is not None:
-                        unread = 0
-                    if unread == 0:
-                        guichat.title('PYCHAT | #' + str(channel) + " - " + channel_name)
+                    received_list = loadidslist(channel, password)
+                    if received_list != ['err6']:
+                        idlist = received_list[0]
+                        channel_name = received_list[1]
+                        if guichat.focus_get() is not None:
+                            unread = 0
+                        if unread == 0:
+                            guichat.title('PYCHAT | #' + str(channel) + " - " + channel_name)
+                        else:
+                            guichat.title('(' + str(unread) + ') ' + 'PYCHAT | #' + str(channel) + " - " + channel_name)
+                        if not idlist:
+                            localidlist.clear()
+                            chat.config(state=NORMAL)
+                            chat.delete(1.0, END)
+                            chat.config(state=DISABLED)
+                            unread = 0
+                            guichat.title('PYCHAT | #' + str(channel) + " - " + channel_name)
+                        elif idlist != "err3":
+                            for item in idlist:
+                                item = str(item)[1:-2]
+                                if (item not in localidlist) is True:
+                                    data = get_msg(item, channel, password)
+                                    localidlist.append(item)
+                                    date = data[3]
+                                    date = "[" + str(date[2]) + "/" + date[1] + "/" + date[0] + " | " + str(
+                                        date[3]) + ":" + \
+                                           date[4] + ":" + date[5] + "] "
+                                    pseudo = "<" + str(data[1]) + "> "
+                                    textmessage = str(data[2]) + "\n"
+                                    text = date + pseudo + textmessage
+                                    chat.config(state=NORMAL)
+                                    chat.insert(END, text)
+                                    tag1_arg1 = str(len(localidlist)) + ".0"
+                                    tag1_arg2 = str(len(localidlist)) + "." + str(len(date))
+                                    tag2_arg1 = str(len(localidlist)) + "." + str(len(date))
+                                    tag2_arg2 = str(len(localidlist)) + "." + str(len(date) + len(pseudo))
+                                    chat.tag_add("date", tag1_arg1, tag1_arg2)
+                                    chat.tag_config("date", foreground="green")
+                                    chat.tag_add("pseudo", tag2_arg1, tag2_arg2)
+                                    chat.tag_config("pseudo", foreground="blue")
+                                    chat.config(state=DISABLED)
+                                    if guichat.focus_get() is None:
+                                        unread += 1
                     else:
-                        guichat.title('(' + str(unread) + ') ' + 'PYCHAT | #' + str(channel) + " - " + channel_name)
-                    if idlist == []:
                         localidlist.clear()
+                        idlist.clear()
                         chat.config(state=NORMAL)
                         chat.delete(1.0, END)
+                        chat.insert(END, "canal supprimé")
                         chat.config(state=DISABLED)
-                        unread = 0
-                        guichat.title('PYCHAT | #' + str(channel) + " - " + channel_name)
-                    elif idlist != "err3":
-                        for item in idlist:
-                            item = str(item)[1:-2]
-                            if (item not in localidlist) is True:
-                                data = get_msg(item, channel, password)
-                                localidlist.append(item)
-                                date = data[3]
-                                date = "[" + str(date[2]) + "/" + date[1] + "/" + date[0] + " | " + str(date[3]) + ":" + \
-                                       date[4] + ":" + date[5] + "] "
-                                pseudo = "<" + str(data[1]) + "> "
-                                textmessage = str(data[2]) + "\n"
-                                text = date + pseudo + textmessage
-                                chat.config(state=NORMAL)
-                                chat.insert(END, text)
-                                tag1_arg1 = str(len(localidlist)) + ".0"
-                                tag1_arg2 = str(len(localidlist)) + "." + str(len(date))
-                                tag2_arg1 = str(len(localidlist)) + "." + str(len(date))
-                                tag2_arg2 = str(len(localidlist)) + "." + str(len(date) + len(pseudo))
-                                chat.tag_add("date", tag1_arg1, tag1_arg2)
-                                chat.tag_config("date", foreground="green")
-                                chat.tag_add("pseudo", tag2_arg1, tag2_arg2)
-                                chat.tag_config("pseudo", foreground="blue")
-                                chat.config(state=DISABLED)
-                                if guichat.focus_get() is None:
-                                    unread += 1
-
-
                 except:
                     pass
 
@@ -385,8 +392,8 @@ def gui_chat(a, b, c, d):
     def del_chan():
         if chan_delete(username, userpassword, channel, password) is True:
             global Running, localidlist
-            close()
             Running = False
+            close()
             localidlist.clear()
             gui_menu(username, userpassword)
         else:
@@ -394,8 +401,9 @@ def gui_chat(a, b, c, d):
 
     def clear_chan():
         if chan_clear(username, userpassword, channel, password) is True:
-            global localidlist
+            global localidlist, idlist
             localidlist.clear()
+            idlist.clear()
             chat.config(state=NORMAL)
             chat.delete(1.0, END)
             chat.config(state=DISABLED)
