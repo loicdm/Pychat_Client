@@ -142,6 +142,11 @@ def gui_join(a, b):
         guimenu.destroy()
         gui_create(username, userpassword)
 
+    def quit_ask():
+        answer = askyesno("Quitter Pychat", "Êtes-vous sûr de vouloir quitter Pychat ?", icon='warning')
+        if answer is True:
+            guimenu.destroy()
+
     global username, userpassword, guimenu
     username = a
     userpassword = b
@@ -177,7 +182,7 @@ def gui_join(a, b):
     menu1.add_command(label="Créer", command=create_chan)
     menu1.add_command(label="Rejoindre", command=join_chan_call_gui)
     menu1.add_separator()
-    menu1.add_command(label="Quitter", command=guimenu.quit)
+    menu1.add_command(label="Quitter", command=quit_ask)
     menubar.add_cascade(label="Canal", menu=menu1)
 
     menu3 = Menu(menubar, tearoff=0)
@@ -216,6 +221,11 @@ def gui_create(a, b):
         guimenu.destroy()
         gui_create(username, userpassword)
 
+    def quit_ask():
+        answer = askyesno("Quitter Pychat", "Êtes-vous sûr de vouloir quitter Pychat ?", icon='warning')
+        if answer is True:
+            guimenu.destroy()
+
     global username, userpassword, guimenu
     username = a
     userpassword = b
@@ -242,7 +252,7 @@ def gui_create(a, b):
     menu1.add_command(label="Créer", command=create_chan)
     menu1.add_command(label="Rejoindre", command=join_chan)
     menu1.add_separator()
-    menu1.add_command(label="Quitter", command=guimenu.quit)
+    menu1.add_command(label="Quitter", command=quit_ask)
     menubar.add_cascade(label="Canal", menu=menu1)
 
     menu3 = Menu(menubar, tearoff=0)
@@ -390,39 +400,45 @@ def gui_chat(a, b, c, d):
         gui_create(username, userpassword)
 
     def del_chan():
-        if chan_delete(username, userpassword, channel, password) is True:
-            global Running, localidlist
-            Running = False
-            close()
-            localidlist.clear()
-            gui_menu(username, userpassword)
-        else:
-            showwarning('ERR1', 'PAS LES DROITS')
+        answer = askyesno("Supprimer le canal", "Êtes-vous sûr de vouloir supprimer le canal ?", icon='warning')
+        if answer is True:
+            if chan_delete(username, userpassword, channel, password) is True:
+                global Running, localidlist
+                Running = False
+                close()
+                localidlist.clear()
+                gui_menu(username, userpassword)
+            else:
+                showwarning('ERR1', 'PAS LES DROITS')
 
     def clear_chan():
-        if chan_clear(username, userpassword, channel, password) is True:
-            global localidlist, idlist
-            localidlist.clear()
-            idlist.clear()
-            chat.config(state=NORMAL)
-            chat.delete(1.0, END)
-            chat.config(state=DISABLED)
-        else:
-            showwarning('ERR1', 'PAS LES DROITS')
+        answer = askyesno("Supprimer les messages", "Êtes-vous sûr de vouloir supprimer les messages ?", icon='warning')
+        if answer is True:
+            if chan_clear(username, userpassword, channel, password) is True:
+                global localidlist, idlist
+                localidlist.clear()
+                idlist.clear()
+                chat.config(state=NORMAL)
+                chat.delete(1.0, END)
+                chat.config(state=DISABLED)
+            else:
+                showwarning('ERR1', 'PAS LES DROITS')
 
     def rename_gui():
 
         def rename():
             new_channel_name = str(channel_rename_entry.get())
             if new_channel_name:
-                if rename_chan(username, userpassword, channel, password, new_channel_name) is True:
-                    guirename.destroy()
-                    global channel_name
-                    channel_name = new_channel_name
-                    guichat.title('PYCHAT | #' + str(channel) + " - " + channel_name)
+                answer = askyesno("Renommer le canal", "Êtes-vous sûr de vouloir renommer le canal ?", icon='warning')
+                if answer is True:
+                    if rename_chan(username, userpassword, channel, password, new_channel_name) is True:
+                        guirename.destroy()
+                        global channel_name
+                        channel_name = new_channel_name
+                        guichat.title('PYCHAT | #' + str(channel) + " - " + channel_name)
 
-                else:
-                    showwarning('ERR1', 'PAS LES DROITS')
+                    else:
+                        showwarning('ERR1', 'PAS LES DROITS')
 
         def enter(event):
             rename()
@@ -443,6 +459,11 @@ def gui_chat(a, b, c, d):
         channel_rename_entry.pack()
         button2.pack()
         guirename.mainloop()
+
+    def quit_ask():
+        answer = askyesno("Quitter Pychat", "Êtes-vous sûr de vouloir quitter Pychat ?", icon='warning')
+        if answer is True:
+            close()
 
     def close():
         global guichat
@@ -469,7 +490,7 @@ def gui_chat(a, b, c, d):
     menu1.add_command(label="Supprimer le canal", command=del_chan)
     menu1.add_command(label="Supprimer les messages", command=clear_chan)
     menu1.add_separator()
-    menu1.add_command(label="Quitter", command=close)
+    menu1.add_command(label="Quitter", command=quit_ask)
     menubar.add_cascade(label="Canal", menu=menu1)
 
     menu3 = Menu(menubar, tearoff=0)
